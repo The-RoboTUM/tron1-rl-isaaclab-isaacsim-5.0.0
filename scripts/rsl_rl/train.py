@@ -170,16 +170,39 @@ torch.backends.cudnn.benchmark = False
 # @hydra_task_config(args_cli.task, "rsl_rl_cfg_entry_point")
 def main():
     """Train with RSL-RL agent."""
+
+    # 🧩 解析环境配置
     # parse configuration
     env_cfg: ManagerBasedRLEnvCfg = parse_env_cfg(
         task_name=args_cli.task, device=args_cli.device, num_envs=args_cli.num_envs
     )
+    # 📦 输出对象
+    #
+    # 返回一个 ManagerBasedRLEnvCfg 类型 的配置对象 env_cfg，
+    # 它包含了整个强化学习环境的设置。
+
+    # 🧩 解析算法配置（PPO）
     agent_cfg: RslRlPpoAlgorithmMlpCfg = cli_args.parse_rsl_rl_cfg(args_cli.task, args_cli)
 
+   # 📦 输出对象
+    #
+    # 返回一个 RslRlPpoAlgorithmMlpCfg 类型的对象，即 PPO 算法的配置。
+    #
+    # RslRlPpoAlgorithmMlpCfg 是一个“配置类（Config class）”，
+    # 用来保存训练超参数和网络结构定义。
+
+    # 🧩 命令行优先覆盖配置
     if args_cli.max_iterations is not None:
         agent_cfg.max_iterations = args_cli.max_iterations
     if args_cli.save_interval is not None:
         agent_cfg.save_interval = args_cli.save_interval
+    # ✅ 作用
+    #
+    # 手动覆盖 agent_cfg 中的两个关键训练参数：
+    #
+    # max_iterations：最大训练迭代次数
+    #
+    # save_interval：模型保存间隔（多少次迭代保存一次）
 
     # specify directory for logging experiments
     log_root_path = os.path.join("logs", "rsl_rl", agent_cfg.experiment_name)
